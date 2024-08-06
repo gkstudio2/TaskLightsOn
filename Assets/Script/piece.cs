@@ -8,7 +8,6 @@ public class piece : MonoBehaviour {
 	public int[] values;
 	public float speed;
 	float realRotation;
-	//public bool Cannotrotate;
 	[SerializeField] bool HasChild;
 
 	[SerializeField] GameManager gamemanager;
@@ -28,7 +27,7 @@ public class piece : MonoBehaviour {
     void Update () {
 	
 
-		if (transform.root.eulerAngles.z != realRotation /*&& !Cannotrotate*/) {
+		if (transform.root.eulerAngles.z != realRotation) {
             if (!HasChild)
             {
 				transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, 0, realRotation), speed);
@@ -39,6 +38,11 @@ public class piece : MonoBehaviour {
 				transform.GetChild(0).transform.rotation = Quaternion.Lerp(transform.GetChild(0).transform.rotation, Quaternion.Euler(0, 0, realRotation), speed);
 			}
 		}
+       /* if (Input.GetMouseButtonDown(0))
+        {
+			OnMouseDown
+
+		}*/
 
 	}
 
@@ -46,7 +50,7 @@ public class piece : MonoBehaviour {
 
 	void OnMouseDown()
 	{
-
+		AudioManager.Instance.PlayOneshot();
 		int difference = -gamemanager.QuickSweep((int)transform.position.x,(int)transform.position.y);
 
 
