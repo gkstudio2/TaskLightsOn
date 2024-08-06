@@ -7,12 +7,14 @@ public class GameManager : MonoBehaviour {
 
 	public static GameManager Instance;
 	public GameObject canvas;
+	public bool CanPlay;
 
 	[SerializeField] GameObject[] piecePrefabs;
 	
 	float score = 100;
     [SerializeField] TextMeshProUGUI scoretext;
     [SerializeField] TextMeshProUGUI winmenuscoretext;
+    [SerializeField] TextMeshProUGUI levelnumber;
 	bool CanReduceScore = false;
 
 	[System.Serializable]
@@ -76,7 +78,7 @@ public class GameManager : MonoBehaviour {
 	}
     public void Clonelevel(int lvl)
     {
-		
+		CanPlay = true;
 		Clonedlevel = (GameObject)Instantiate(Resources.Load("Level_" + lvl.ToString()));
 		//Clonedlevel.transform.SetParent(this.transform, false);
 		piecePrefabs = new GameObject[0];
@@ -93,6 +95,7 @@ public class GameManager : MonoBehaviour {
 
 		foreach (var piece in piecePrefabs)
 		{
+
 			Debug.LogWarning(piece.name);
 			puzzle.pieces[(int)piece.transform.position.x, (int)piece.transform.position.y] = piece.GetComponent<piece>();
 
@@ -147,23 +150,32 @@ public class GameManager : MonoBehaviour {
                 piecePrefabs[i].GetComponent<piece>().Highlight.SetActive(true);
             }
         }
-       
+		CanReduceScore = false;
 		Invoke(nameof(nextmove), 2f);
 		
 	}
+	int completedlvl;
 	void nextmove()
     {
 		if (unlockedlevels == Currentlevel)
 		{
-			CanReduceScore = false;
+			completedlvl = unlockedlevels;
 			Playerlevel.Instance.Scoresaver(unlockedlevels, (int)score);
+			if(unlockedlevels<5)
 			unlockedlevels++;
 			Playerlevel.Instance.SetMaxUnlockedlevels(unlockedlevels);
 			canvas.GetComponent<GameUIController>().Winmenupopup.SetActive(true);
+			scoretext.transform.parent.gameObject.SetActive(false);
 			winmenuscoretext.text = Playerlevel.Instance.Getsavedscore(Currentlevel).ToString();
+			levelnumber.text = Currentlevel.ToString();
 		}
 		else
 		{
+			Playerlevel.Instance.Scoresaver(unlockedlevels, (int)score);
+			canvas.GetComponent<GameUIController>().Winmenupopup.SetActive(true);
+			levelnumber.text = unlockedlevels.ToString();
+			winmenuscoretext.text = Playerlevel.Instance.Getsavedscore(unlockedlevels).ToString();
+			scoretext.transform.parent.gameObject.SetActive(false);
 			Playerlevel.Instance.SetCurrentselectedlevels(0);
 		}
 	}
@@ -265,14 +277,21 @@ public class GameManager : MonoBehaviour {
 	//Loadnextlevel
 	public void NextLevel()
 	{
-		
-		if (Clonedlevel!=null)
+		if (unlockedlevels < 5)
         {
-			piecePrefabs = new GameObject[0];
-			Destroy(Clonedlevel);
-        }
-		Playerlevel.Instance.SetCurrentselectedlevels(0);
-		SceneManager.LoadScene("Game");
+			if (Clonedlevel != null)
+			{
+				piecePrefabs = new GameObject[0];
+				Destroy(Clonedlevel);
+			}
+			Playerlevel.Instance.SetCurrentselectedlevels(unlockedlevels);
+			SceneManager.LoadScene("Game");
+		}
+        else
+        {
+			canvas.GetComponent<GameUIController>().UnderConstruction.SetActive(true);
+
+		}
 	}
 
 	public void Testnextlevel()

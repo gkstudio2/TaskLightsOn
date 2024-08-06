@@ -50,28 +50,33 @@ public class piece : MonoBehaviour {
 
 	void OnMouseDown()
 	{
-		AudioManager.Instance.PlayOneshot();
-		int difference = -gamemanager.QuickSweep((int)transform.position.x,(int)transform.position.y);
+		if(GameManager.Instance.CanPlay)
+        {
+			AudioManager.Instance.PlayOneshot();
+			int difference = -gamemanager.QuickSweep((int)transform.position.x, (int)transform.position.y);
 
 
-		//if(!Cannotrotate)
-		RotatePiece ();
+			//if(!Cannotrotate)
+			RotatePiece();
 
 
-		difference += gamemanager.QuickSweep((int)transform.position.x,(int)transform.position.y);
-
-
-
-
-		gamemanager.puzzle.curValue += difference;
+			difference += gamemanager.QuickSweep((int)transform.position.x, (int)transform.position.y);
 
 
 
-		if (gamemanager.puzzle.curValue == gamemanager.puzzle.winValue)
-			PlayerWon();
+
+			gamemanager.puzzle.curValue += difference;
+
+
+
+			if (gamemanager.puzzle.curValue == gamemanager.puzzle.winValue)
+				PlayerWon();
+		}
+		
 	}
 	void PlayerWon()
     {
+		GameManager.Instance.CanPlay = false;
 		Debug.LogWarning("Player Won");
 		gamemanager.Win();
 	}

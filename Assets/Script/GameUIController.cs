@@ -3,17 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.UI;
+
 public class GameUIController : MonoBehaviour
 {
     public GameObject Playpopup;
     public GameObject Winmenupopup;
     public GameObject Pausepopup;
     public GameObject Exitpopup;
+    public GameObject UnderConstruction;
     public GameObject[] levelbuttons;
     public TextMeshProUGUI score;
+    public TextMeshProUGUI levelnumber;
+    public SpriteRenderer Background;
+    public Color[] colors;
     int unlockedlevels;
     void Start()
     {
+        Background.color = colors[Random.Range(0, colors.Length)];
         Playpopup.SetActive(false);
         Pausepopup.SetActive(false);
         Exitpopup.SetActive(false);
@@ -68,7 +75,9 @@ public class GameUIController : MonoBehaviour
     void openplaypopup()
     {
         Playpopup.SetActive(true);
-        score.text=Playerlevel.Instance.Getsavedscore(Playerlevel.Instance.GetCurrentselectedlevels()).ToString();
+        int x = Playerlevel.Instance.GetCurrentselectedlevels();
+        levelnumber.text = x.ToString();
+        score.text=Playerlevel.Instance.Getsavedscore(x).ToString();
     }
     public void StartPlaying()
     {
